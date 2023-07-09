@@ -20,7 +20,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((_) => {
-    console.log('Connect success to database');
+    console.log('Connected successfully to database');
   });
 
 // Start the server
