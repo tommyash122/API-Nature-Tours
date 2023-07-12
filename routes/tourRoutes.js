@@ -1,24 +1,25 @@
-const {
-  createTour,
-  deleteTour,
-  getTour,
-  getAllTours,
-  updateTour,
-  aliasTopTours,
-  getToursStats,
-  getMonthlyPlan,
-} = require('./../controllers/tourController');
+const tourController = require('./../controllers/tourController');
+const authController = require('./../controllers/authController');
 const express = require('express');
 
 const router = express.Router();
 
 // router.param('id', checkID);
 
-router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
-router.route('/tours-stats').get(getToursStats);
-router.route('/monthly-plan/:year').get(getMonthlyPlan);
+router
+  .route('/top-5-cheap')
+  .get(tourController.aliasTopTours, tourController.getAllTours);
+router.route('/tours-stats').get(tourController.getToursStats);
+router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
-router.route('/').get(getAllTours).post(createTour);
-router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+router
+  .route('/')
+  .get(authController.protect, tourController.getAllTours)
+  .post(tourController.createTour);
+router
+  .route('/:id')
+  .get(tourController.getTour)
+  .patch(tourController.updateTour)
+  .delete(tourController.deleteTour);
 
 module.exports = router;

@@ -1,9 +1,19 @@
-exports.gettAllUsers = (req, res) => {
-  res.status(500).json({
-    status: '500 Internal Server Error',
-    message: 'This route is not yet supported',
+const User = require('./../models/userModel');
+const catchAsync = require('./../utils/catchAsync');
+
+exports.gettAllUsers = catchAsync(async (req, res) => {
+  const users = await User.find();
+
+  // Send response
+  res.status(200).json({
+    status: 'success',
+    results: users.length,
+    data: {
+      users: users,
+    },
   });
-};
+});
+
 exports.addUser = (req, res) => {
   res.status(500).json({
     status: '500 Internal Server Error',

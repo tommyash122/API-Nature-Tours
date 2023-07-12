@@ -1,15 +1,17 @@
-const {
-  addUser,
-  deleteUser,
-  getUser,
-  gettAllUsers,
-  updateUser,
-} = require('./../controllers/userController');
 const express = require('express');
+const userController = require('./../controllers/userController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-router.route('/').get(gettAllUsers).post(addUser);
-router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
+
+router.route('/').get(userController.gettAllUsers).post(userController.addUser);
+router
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;
