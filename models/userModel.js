@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please enter a password'],
     minlength: 8,
-    select: false,
+    select: false, // allow us to not reveal this field to the user.
   },
   passwordConfirm: {
     type: String,
@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false, // allow us to not reveal this field to the user.
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -53,11 +58,24 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000; // Define the passwordChangedAt field 1 second in the past to avoid DB delay
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  // This points to the current query
+  this.find({ active: { $ne: false } }); // when the active property is NOT equal to false.
+  next();
+});
+
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
 ) {
-  return await bcrypt.compare(userPassword, candidatePassword);
+  return await bcrypt.compare(userPassword, candidatePassword); // I did the opposite first the user then the candidate.
 };
 
 userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
@@ -82,9 +100,9 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest('hex');
 
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes from now, (60 for seconds), (1000 for milliseconds)
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes from now, (60 for seconds), (1000 for milliseconds)
 
-    return resetToken;
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
