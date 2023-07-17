@@ -117,6 +117,11 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Indexes: A pointer to an object that satisfy a specific attribute. 
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });

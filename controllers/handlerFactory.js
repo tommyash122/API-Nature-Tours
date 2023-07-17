@@ -41,7 +41,7 @@ exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     // const newTour  = new Tour({});
     // newTour.save();
-
+    
     const doc = await Model.create(req.body);
 
     res.status(201).json({
@@ -83,6 +83,7 @@ exports.getAll = (Model) =>
 
     // Execute query
     const docs = await features.query;
+    // const docs = await features.query.explain();
 
     // Send response
     res.status(200).json({
