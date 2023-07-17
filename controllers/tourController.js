@@ -1,6 +1,7 @@
 const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync.js');
 const factory = require('./handlerFactory');
+const AppError = require('./../utils/appError');
 
 exports.aliasTopTours = catchAsync(async (req, res, next) => {
   req.query.limit = '5';
@@ -87,26 +88,25 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   });
 });
 
-// Route handlers
-// exports.getAllTours = catchAsync(async (req, res, next) => {
-//   const features = new APIFeatures(Tour.find(), req.query)
-//     .filter()
-//     .sort()
-//     .limitFields()
-//     .paginate();
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
 
-//   // Execute query
-//   const tours = await features.query;
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat, lng',
+        400
+      )
+    );
 
-//   // Send response
-//   res.status(200).json({
-//     status: 'success',
-//     results: tours.length,
-//     data: {
-//       tours: tours,
-//     },
-//   });
-// });
+    console.log(distance, lat, lng, unit);
+
+    res.status(200).json({
+      status: 'success',
+    });
+  }
+});
 
 exports.getAllTours = factory.getAll(Tour);
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
