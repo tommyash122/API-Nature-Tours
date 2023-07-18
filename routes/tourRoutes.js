@@ -27,7 +27,7 @@ router
   .route('/tours-within/:distance/center/:latlng/unit/:unit')
   .get(tourController.getToursWithin);
 
-  // TODO: implement this route.
+// TODO: implement this route.
 // router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
 
 router
